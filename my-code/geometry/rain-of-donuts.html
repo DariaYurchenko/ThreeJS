@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rain of Donuts</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r99/three.min.js"></script>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    let scene;
+    let camera;
+    let renderer;
+    let donuts = [];
+
+    //increase it to make cube move/rotate more quickly
+    let add = 0.1;
+    let randomInRange = function(from, to) {
+        let random = Math.random() * (to - from);
+        return random + from;
+    }
+
+    let createDonut = function() {
+        let geometry = new THREE.TorusGeometry(1, 0.5, 5, 30);
+        let material = new THREE.MeshBasicMaterial({color:0xffffff * Math.random()});
+        let donut = new THREE.Mesh(geometry, material);
+
+        donut.position.x = randomInRange(-20,20);
+        donut.position.z = randomInRange(-15,15);
+        donut.position.y = 15;
+
+        scene.add(donut);
+        donuts.push(donut);
+    };
+
+    //initialize main app's elements
+    let init = function() {
+        //create the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xababab);
+
+        //create ans locate the camera
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 1000);
+        //move a little bit backward from the scene
+        camera.position.z = 20;
+        camera.position.y = -10;
+
+        renderer = new THREE.WebGLRenderer();
+
+        //all the window
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //make it element
+        document.body.appendChild(renderer.domElement);
+    };
+
+
+    //Can't control the loop! can just create less donuts
+    let mainLoop = function () {
+        let x = Math.random();
+        if(x < 0.1) {
+            createDonut();
+        }
+        donuts.forEach(d => d.position.y -= add);
+        renderer.render(scene, camera);
+        requestAnimationFrame(mainLoop);
+    }
+
+    init();
+    mainLoop();
+
+</script>

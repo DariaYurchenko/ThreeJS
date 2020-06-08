@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Saturn</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r99/three.min.js"></script>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    let scene;
+    let camera;
+    let renderer;
+
+    //increase it to make cube move/rotate more quickly
+    let add = 0.01;
+
+    let rings = [];
+    let createSaturn = function() {
+        let geometry = new THREE.SphereGeometry(4,30,30);
+        let material = new THREE.MeshBasicMaterial({color:0xFF7337});
+        let sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        geometry = new THREE.TorusGeometry(5.1, 0.7, 2, 50);
+        material = new THREE.MeshBasicMaterial({color:0x977337});
+        let ring = new THREE.Mesh(geometry, material);
+        rings.push(ring);
+
+        geometry = new THREE.TorusGeometry(6.9, 0.7, 2, 50);
+        material = new THREE.MeshBasicMaterial({color:0x537337});
+        ring = new THREE.Mesh(geometry, material);
+        rings.push(ring);
+
+        geometry = new THREE.TorusGeometry(8.5, 0.7, 2, 50);
+        material = new THREE.MeshBasicMaterial({color:0xFFDD00});
+        ring = new THREE.Mesh(geometry, material);
+        rings.push(ring);
+
+        rings.forEach(ring => {
+            ring.rotation.y = 0.5;
+            ring.rotation.x = 1.7;
+            scene.add(ring);
+        })
+
+
+    };
+
+    let init = function() {
+        //create the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xababab);
+
+        //create ans locate the camera
+        camera = new THREE.PerspectiveCamera(30, window.innerWidth/window.innerHeight, 1, 1000);
+        //move a little bit backward from the scene
+        camera.position.z = 50;
+        camera.position.y = 0;
+        camera.position.x = 0;
+
+        createSaturn();
+
+        renderer = new THREE.WebGLRenderer();
+
+        //all the window
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //make it element
+        document.body.appendChild(renderer.domElement);
+    };
+
+
+    //main animation loop, calls every 50-60 ms
+    //we have to redraw the screen periodically
+    let mainLoop = function () {
+        camera.position.y += add;
+        if(camera.position.y <= -5 || camera.position.y >= 5) {
+            add *= -1;
+        }
+        renderer.render(scene, camera);
+        requestAnimationFrame(mainLoop);
+    }
+
+    init();
+    mainLoop();
+
+</script>

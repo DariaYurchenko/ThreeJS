@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Torus</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r99/three.min.js"></script>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    let scene;
+    let camera;
+    let renderer;
+
+    //increase it to make cube move/rotate more quickly
+    let add = 0.11;
+    let randomInRange = function(from, to) {
+        let random = Math.random() * (to - from);
+        return random + from;
+    }
+
+    let torus;
+    let createTorus = function() {
+        // let geometry = new THREE.SphereGeometry(5,30,30);//5,4,3 -> cube with pyramids on it; as more segments then more spheric
+        let geometry = new THREE.TorusGeometry(1, 0.5, 5, 30);
+        let material = new THREE.MeshBasicMaterial({color:0x00a1cb,
+            wireframe:true});
+        torus = new THREE.Mesh(geometry, material);
+        torus.position.x = randomInRange(-15,15);
+        torus.position.z = randomInRange(-15,2);
+        torus.position.y = 15;
+        /*torus.position.x = randomInRange(-15,15);
+        torus.position.y = 15;
+        torus.position.z = randomInRange(-15,15);*/
+        scene.add(torus);
+    };
+
+    //initialize main app's elements
+    let init = function() {
+        //create the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xababab);
+
+        //create ans locate the camera
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 1000);
+        //move a little bit backward from the scene
+        camera.position.z = 20;
+        camera.position.y = -10;
+        //camera.position.z = 50;
+
+        createTorus();
+
+        renderer = new THREE.WebGLRenderer();
+
+        //all the window
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //make it element
+        document.body.appendChild(renderer.domElement);
+    };
+
+
+    //main animation loop, calls every 50-60 ms
+    //we have to redraw the screen periodically
+    let mainLoop = function () {
+        torus.position.y -= add
+        torus.rotation.x += add;
+        torus.rotation.y += add;
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(mainLoop);
+    }
+
+    init();
+    mainLoop();
+
+</script>

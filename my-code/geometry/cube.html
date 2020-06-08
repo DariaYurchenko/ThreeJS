@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cube</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r99/three.min.js"></script>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    let scene;
+    let camera;
+    let renderer;
+
+    //increase it to make cube move/rotate more quickly
+    let add = 0.01;
+
+    let cube;
+    let createCube = function() {
+        let geometry = new THREE.BoxGeometry(1,1,1);
+        let material = new THREE.MeshBasicMaterial({color:0x00a1cb});
+        cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+    };
+
+    //initialize main app's elements
+    let init = function() {
+        //create the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xababab);
+
+        //create ans locate the camera
+        camera = new THREE.PerspectiveCamera(30, window.innerWidth/window.innerHeight, 1, 1000);
+        //move a little bit backward from the scene
+        camera.position.z = 5;
+
+        createCube();
+        cube.position.x = 2; //will move the cube left according to the camera (it is fixed)
+
+        renderer = new THREE.WebGLRenderer();
+
+        //all the window
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //make it element
+        document.body.appendChild(renderer.domElement);
+    };
+
+
+    //main animation loop, calls every 50-60 ms
+    //we have to redraw the screen periodically
+    let mainLoop = function () {
+
+        //cube starts to move from right to left in vise versa
+        cube.position.x += add;
+        cube.rotation.z -= add;
+        if(cube.position.x <= -3 || cube.position.x >= 3) {
+            add *= -1;
+        }
+        //console.log("Hi"); will see that the loop refreshes the scene usually
+        renderer.render(scene, camera);
+        requestAnimationFrame(mainLoop);
+    }
+
+    init();
+    mainLoop();
+
+</script>

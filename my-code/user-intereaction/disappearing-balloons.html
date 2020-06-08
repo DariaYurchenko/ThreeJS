@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Disappearing Balloons</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r99/three.min.js"></script>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    let scene, camera, renderer, light, rayCast, mouse;
+    let spheres = [];
+
+    let add = 0.1;
+
+    let mouseOnClick = function(e) {
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
+        mouse.z = 1;
+        rayCast.setFromCamera(mouse, camera);
+
+        let intersects = rayCast.intersectObjects(scene.children);
+        if(intersects.length === 0)
+            return;
+        let hit = intersects[0].object;
+        spheres.forEach((b,ind) => {
+            if(b === hit) {
+                spheres.splice(ind, 1);
+                scene.remove(b);
+            }
+        });
+
+    }
+
+    let randomInRange = function(from, to) {
+        let x = Math.random() * (to - from);
+        return x + from;
+    };
+
+    let createSphere = function() {
+        let geometry = new THREE.SphereGeometry(5, 30, 30);
+        let material = new THREE.MeshPhongMaterial({color: Math.random() * 0Xffffff,
+            shininess: 100, side: THREE.DoubleSide});
+        let sphere = new THREE.Mesh(geometry, material);
+        sphere.position.set(randomInRange(-80, 80), -30, randomInRange(-40, 10));
+        spheres.push(sphere);
+        scene.add(sphere);
+    }
+
+    let init = function() {
+        // create the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+
+        camera = new THREE.PerspectiveCamera(75,
+            window.innerWidth / window.innerHeight,
+            1, 1000);
+
+        camera.position.set(0, 10, 40);
+
+        light = new THREE.DirectionalLight(0xffffff, 1);
+        scene.add(light);
+
+        rayCast = new THREE.Raycaster();
+        mouse = new THREE.Vector2();
+        mouse.x = mouse.y = -1;
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        document.body.appendChild(renderer.domElement);
+        document.addEventListener("click", mouseOnClick, false);
+    };
+
+
+    // main animation loop - calls 50-60 times per second.
+    let mainLoop = function() {
+        let x = Math.random();
+        if(x < 0.04) {
+            createSphere();
+        }
+        spheres.forEach(sphere => sphere.position.y += add);
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(mainLoop);
+    };
+
+    init();
+    mainLoop();
+
+</script>

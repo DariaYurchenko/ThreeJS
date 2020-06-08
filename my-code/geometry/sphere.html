@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sphere</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r99/three.min.js"></script>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+    let scene;
+    let camera;
+    let renderer;
+
+    //increase it to make cube move/rotate more quickly
+    let add = 0.01;
+
+    let sphere;
+    let createSphere = function() {
+       // let geometry = new THREE.SphereGeometry(5,30,30);//5,4,3 -> cube with pyramids on it; as more segments then more spheric
+        let geometry = new THREE.SphereGeometry(5,30,30, 0, Math.PI);
+        let material = new THREE.MeshBasicMaterial({color:0x00a1cb,
+        wireframe:true});
+        sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+    };
+
+    //initialize main app's elements
+    let init = function() {
+        //create the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xababab);
+
+        //create ans locate the camera
+        camera = new THREE.PerspectiveCamera(30, window.innerWidth/window.innerHeight, 1, 1000);
+        //move a little bit backward from the scene
+        camera.position.z = 50;
+
+        createSphere();
+
+        renderer = new THREE.WebGLRenderer();
+
+        //all the window
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        //make it element
+        document.body.appendChild(renderer.domElement);
+    };
+
+
+    //main animation loop, calls every 50-60 ms
+    //we have to redraw the screen periodically
+    let mainLoop = function () {
+        sphere.rotation.x += add;
+        sphere.rotation.y += add;
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(mainLoop);
+    }
+
+    init();
+    mainLoop();
+
+</script>
